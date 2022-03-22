@@ -1,0 +1,62 @@
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { ClassesService } from '../../Service/classes.service';
+import { Class } from '../../Models/Class';
+
+@Component({
+  selector: 'app-classes',
+  templateUrl: './classes.component.html',
+  styleUrls: ['./classes.component.css']
+})
+export class ClassesComponent implements OnInit {
+  public classesFiltradas: Class [] = []
+  public titulo = 'SISAUD | Parametrização';
+  public classesSelecionada: string = '';
+
+  public classes : Class[] = [];
+
+
+  classesSelect(classe:any){
+    this.classesSelecionada = classe.descricao;
+  }
+
+  voltar(){
+    this.classesSelecionada = ''
+  }
+
+  constructor(
+    private formBuilder:FormBuilder,
+    public classesService: ClassesService
+
+  ) { }
+
+  ngOnInit() {
+    this.carregarClasses();
+  }
+
+  carregarClasses(){
+    this.classesService.getAll().subscribe(
+      (classes: Class []) => {
+        this.classes = classes;
+      },
+      (erro: any) => {
+        console.error(erro);
+      }
+
+
+    );
+  }
+
+  objForm = this.formBuilder.group({
+    descricao: [],
+  });
+
+
+
+  public async post(){
+    await this.classesService.adcPost(this.objForm.value).subscribe(res => {
+      console.log(res);
+    });
+  }
+
+}
